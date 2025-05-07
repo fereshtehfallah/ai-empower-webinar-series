@@ -70,13 +70,13 @@ const Index = () => {
 
                   <div className="bg-webinar-light p-4 rounded-lg border-r-4 border-webinar-secondary">
                     <p className="font-bold">🔸 کارگاه دوم: آموزش هوش مصنوعی به کاربران کتابخانه</p>
-                    <p>📅 سه‌شنبه، ۱۳ خرداد ۱۴۰۴ | 🕑 ساعت ۱۴:۰۰ به وقت هنگ‌کنگ</p>
+                    <p>📅 سه‌شنبه، ۱۳ خرداد ۱۴۰۴ | 🕑 ساعت ۱۳:۰۰ به وقت تهران</p>
                     <p>📌 یادگیری طراحی و ارائه آموزش‌های هوش مصنوعی برای دانشجویان، اساتید و پژوهشگران؛ شامل ابزارها، برنامه درسی و روش‌های تدریس.</p>
                   </div>
 
                   <div className="bg-webinar-light p-4 rounded-lg border-r-4 border-webinar-accent">
                     <p className="font-bold">🔸 کارگاه سوم: راهکارهای هوش مصنوعی برای پژوهش و انتشار علمی</p>
-                    <p>📅 سه‌شنبه، ۲۷ خرداد ۱۴۰۴ | 🕑 ساعت ۱۴:۰۰ به وقت هنگ‌کنگ</p>
+                    <p>📅 سه‌شنبه، ۲۷ خرداد ۱۴۰۴ | 🕑 ساعت ۱۳:۰۰ به وقت تهران</p>
                     <p>📌 بررسی نحوه استفاده از هوش مصنوعی برای جستجوی منابع، برنامه‌ریزی پژوهش، بهبود مقاله، و فرآیند ارسال به مجلات علمی.</p>
                   </div>
 
@@ -96,22 +96,22 @@ const Index = () => {
 
               {/* Audience Section */}
               <WebinarSection title="این کارگاه مناسب چه کسانی است؟" icon={<Users />}>
-                <ul className="list-none space-y-2">
-                  <li className="flex justify-end items-center gap-2">
+                <ul className="list-none space-y-2 text-right">
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-500">✔️</span>
                     <span>کتابداران دانشگاهی</span>
-                    <span className="text-green-500">✔️</span>
                   </li>
-                  <li className="flex justify-end items-center gap-2">
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-500">✔️</span>
                     <span>اعضای هیئت‌علمی و پژوهشگران</span>
-                    <span className="text-green-500">✔️</span>
                   </li>
-                  <li className="flex justify-end items-center gap-2">
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-500">✔️</span>
                     <span>مربیان سواد دیجیتال</span>
-                    <span className="text-green-500">✔️</span>
                   </li>
-                  <li className="flex justify-end items-center gap-2">
-                    <span>تمامی افراد فعال در حوزه پژوهش، انتشار یا آموزش عالی</span>
+                  <li className="flex items-center gap-2">
                     <span className="text-green-500">✔️</span>
+                    <span>تمامی افراد فعال در حوزه پژوهش، انتشار یا آموزش عالی</span>
                   </li>
                 </ul>
               </WebinarSection>
