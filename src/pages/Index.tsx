@@ -14,11 +14,11 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white" dir="rtl">
       {/* Hero Section */}
       <header className="bg-webinar-primary text-white py-16">
         <div className="container mx-auto px-4 max-w-5xl">
-          <div className="farsi flex flex-col items-end space-y-4">
+          <div className="farsi flex flex-col items-start space-y-4">
             <h1 className="text-4xl md:text-5xl font-bold">توانمندسازی دانشگاه با هوش مصنوعی</h1>
             <p className="text-xl md:text-2xl opacity-90">مجموعه کارگاه‌های آموزشی ویژه کتابداران و پژوهشگران</p>
             <Button 
@@ -41,8 +41,8 @@ const Index = () => {
               <WebinarSection title="تاریخ و زمان" icon={<Calendar />}>
                 <div className="bg-webinar-light p-4 rounded-lg">
                   <p className="font-bold">جلسه اول:</p>
-                  <p>چهارشنبه، ۱۷ اردیبهشت ۱۴۰۴</p>
-                  <p>ساعت ۱۴:۰۰ به وقت هنگ‌کنگ (۱۰:۳۰ به وقت تهران)</p>
+                  <p>دوشنبه، ۲۲ اردیبهشت ۱۴۰۴</p>
+                  <p>ساعت ۱۳:۰۰ به وقت تهران</p>
                 </div>
               </WebinarSection>
 
@@ -64,7 +64,7 @@ const Index = () => {
                 <div className="space-y-6">
                   <div className="bg-webinar-light p-4 rounded-lg border-r-4 border-webinar-primary">
                     <p className="font-bold">🔸 کارگاه اول: سواد هوش مصنوعی برای کتابداران دانشگاهی</p>
-                    <p>📅 چهارشنبه، ۱۷ اردیبهشت ۱۴۰۴ | 🕑 ساعت ۱۴:۰۰ به وقت هنگ‌کنگ</p>
+                    <p>📅 دوشنبه، ۲۲ اردیبهشت ۱۴۰۴ | 🕑 ساعت ۱۳:۰۰ به وقت تهران</p>
                     <p>📌 ایجاد پایه‌ای قوی در مفاهیم هوش مصنوعی، ملاحظات اخلاقی و چگونگی سازگاری کتابخانه‌های دانشگاهی با این فناوری‌ها.</p>
                   </div>
 
@@ -142,7 +142,7 @@ const Index = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-webinar-dark text-white py-8">
+      <footer className="bg-webinar-dark text-white py-8" dir="rtl">
         <div className="container mx-auto px-4 text-center">
           <p className="farsi">تمامی حقوق برای SCiNiTO محفوظ است. © ۱۴۰۴</p>
         </div>
