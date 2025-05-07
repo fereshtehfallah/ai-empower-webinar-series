@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,13 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				webinar: {
+					primary: '#6366f1',
+					secondary: '#818cf8',
+					accent: '#4f46e5',
+					light: '#eef2ff',
+					dark: '#1e1b4b'
 				}
 			},
 			borderRadius: {
