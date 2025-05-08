@@ -20,7 +20,7 @@ const Index = () => {
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="farsi flex flex-col items-start space-y-4">
             <h1 className="text-4xl md:text-5xl font-bold">توانمندسازی دانشگاه‌ها با هوش مصنوعی</h1>
-            <p className="text-xl md:text-2xl opacity-90">مجموعه کارگاه‌های آموزشی ویژه کتابداران و پژوهشگران</p>
+            <p className="text-xl md:text-2xl opacity-90">مجموعه کارگاه‌های آنلاین آموزشی ویژه کتابداران و پژوهشگران</p>
             <Button 
               onClick={scrollToRegistration} 
               className="mt-8 bg-white text-webinar-primary hover:bg-indigo-100 flex items-center gap-2"
@@ -51,10 +51,10 @@ const Index = () => {
                 <div className="space-y-4">
                   <p className="font-bold">توانمندسازی دانشگاه با هوش مصنوعی</p>
                   <p>مجموعه‌ای از کارگاه‌های آنلاین رایگان ویژه کتابداران و پژوهشگران دانشگاهی</p>
-                  <p>ارائه‌شده توسط SCiNiTO | با همکاری iGroup، iDev و Virtus National</p>
+                  <p>ارائه‌شده توسط SCiNiTO </p>
                   
                   <p className="text-gray-700 mt-4">
-                    در این مجموعه کارگاه رایگان، با کاربردهای عملی هوش مصنوعی در محیط‌های آکادمیک آشنا شوید. هر جلسه به بررسی نقش هوش مصنوعی در فرآیندهای پژوهش، آموزش و انتشار علمی می‌پردازد و ابزارها و راهکارهایی را معرفی می‌کند که می‌توانید بلافاصله از آن‌ها استفاده کنید.
+                  در این مجموعه‌ی کارگاه‌های رایگان، با کاربردهای عملی هوش مصنوعی در محیط‌های دانشگاهی آشنا شوید. در هر جلسه، نقش هوش مصنوعی در پژوهش، آموزش و انتشار علمی بررسی می‌شود و ابزارهایی معرفی می‌گردند که می‌توانید همان لحظه از آن‌ها استفاده کنید.
                   </p>
                 </div>
               </WebinarSection>
