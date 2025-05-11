@@ -1,148 +1,172 @@
-
-import React, { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Input } from "@/components/ui/input";
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useForm } from "react-hook-form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 
-interface AdditionalInfoFormProps {
-  isOpen: boolean;
-  onClose: () => void;
-  registrationId: string | null;
-}
+type AdditionalInfoFormData = {
+  major: string;
+  educationLevel: string;
+  previousExperience: string;
+  usedScinitoBefore: boolean;
+};
 
-type UserRole = "student" | "faculty" | "librarian" | "other";
+const AdditionalInfoForm = ({ isOpen, onClose, registrationId }: { isOpen: boolean, onClose: () => void, registrationId: string | null }) => {
+  const form = useForm<AdditionalInfoFormData>({
+    defaultValues: {
+      major: '',
+      educationLevel: '',
+      previousExperience: '',
+      usedScinitoBefore: false,
+    },
+  });
 
-const AdditionalInfoForm = ({ isOpen, onClose, registrationId }: AdditionalInfoFormProps) => {
-  const [role, setRole] = useState<UserRole>("student");
-  const [university, setUniversity] = useState("");
-  const [fieldOfStudy, setFieldOfStudy] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleSubmit = async (data: AdditionalInfoFormData) => {
     if (!registrationId) {
-      toast.error("خطا در ذخیره‌سازی اطلاعات تکمیلی");
+      toast.error("خطا: اطلاعات ثبت‌نام معتبر نیست");
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
-      const { error } = await supabase
-        .from("webinar_registrations")
-        .update({
-          role,
-          university,
-          field_of_study: fieldOfStudy,
-        })
-        .eq("id", registrationId);
+      // Insert additional data into Supabase or Google Sheets as needed
+      const { data: insertedData, error } = await supabase
+        .from('info_registeration')
+        .insert([{ ...data, registration_id: registrationId }]);
 
       if (error) {
-        console.error("Supabase error:", error);
-        toast.error("خطا در ذخیره‌سازی اطلاعات تکمیلی");
+        toast.error("خطا در ثبت اطلاعات تکمیلی. لطفا دوباره تلاش کنید");
       } else {
-        toast.success("اطلاعات تکمیلی با موفقیت ثبت شد");
-        onClose();
+        toast.success("اطلاعات تکمیلی شما با موفقیت ثبت شد");
+        onClose(); // Close the form after submission
       }
     } catch (error) {
-      console.error("Submission error:", error);
-      toast.error("خطا در ذخیره‌سازی اطلاعات تکمیلی");
+      toast.error("خطا در ثبت اطلاعات. لطفا دوباره تلاش کنید");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md farsi" dir="rtl">
-        <DialogHeader>
-          <DialogTitle className="text-right">اطلاعات تکمیلی</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-4">
-            <div>
-              <h4 className="mb-3 font-medium">شما در کدام نقش شرکت می‌کنید؟</h4>
-              <RadioGroup 
-                value={role} 
-                onValueChange={(value) => setRole(value as UserRole)} 
-                className="flex flex-col space-y-2"
-              >
-                <div className="flex items-center justify-end space-x-2 space-x-reverse">
-                  <Label htmlFor="role-student">دانشجو</Label>
-                  <RadioGroupItem value="student" id="role-student" />
-                </div>
-                <div className="flex items-center justify-end space-x-2 space-x-reverse">
-                  <Label htmlFor="role-faculty">عضو هیئت علمی</Label>
-                  <RadioGroupItem value="faculty" id="role-faculty" />
-                </div>
-                <div className="flex items-center justify-end space-x-2 space-x-reverse">
-                  <Label htmlFor="role-librarian">کتابدار</Label>
-                  <RadioGroupItem value="librarian" id="role-librarian" />
-                </div>
-                <div className="flex items-center justify-end space-x-2 space-x-reverse">
-                  <Label htmlFor="role-other">سایر</Label>
-                  <RadioGroupItem value="other" id="role-other" />
-                </div>
-              </RadioGroup>
-            </div>
-            
-            <div>
-              <label htmlFor="university" className="block mb-2 text-sm font-medium text-gray-700">
-                دانشگاه یا سازمان شما
-              </label>
-              <Input
-                id="university"
-                value={university}
-                onChange={(e) => setUniversity(e.target.value)}
-                placeholder="نام دانشگاه یا سازمان خود را وارد کنید"
-                className="text-right"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="fieldOfStudy" className="block mb-2 text-sm font-medium text-gray-700">
-                رشته تحصیلی یا تخصص
-              </label>
-              <Input
-                id="fieldOfStudy"
-                value={fieldOfStudy}
-                onChange={(e) => setFieldOfStudy(e.target.value)}
-                placeholder="رشته تحصیلی یا تخصص خود را وارد کنید"
-                className="text-right"
-              />
-            </div>
-          </div>
-          
-          <div className="flex justify-end gap-2">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={onClose}
-              disabled={isSubmitting}
-            >
-              انصراف
-            </Button>
-            <Button 
-              type="submit" 
-              className="bg-webinar-primary hover:bg-webinar-accent"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "در حال ثبت..." : "ثبت اطلاعات"}
-            </Button>
-          </div>
+    <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-lg p-6 farsi">
+      <h3 className="text-2xl font-bold mb-6 text-webinar-dark">اطلاعات تکمیلی</h3>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          {/* رشته تحصیلی */}
+          <FormField
+            control={form.control}
+            name="major"
+            rules={{ required: "رشته تحصیلی الزامی است" }}
+            render={({ field }) => (
+              <FormItem>
+                <label htmlFor="major" className="block mb-2 text-sm font-medium text-gray-700">رشته تحصیلی</label>
+                <FormControl>
+                  <Input
+                    id="major"
+                    placeholder="مثال: مهندسی کامپیوتر"
+                    className="text-right"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-right text-red-500 text-xs mt-1" />
+              </FormItem>
+            )}
+          />
+
+          {/* مقطع تحصیلی */}
+          <FormField
+            control={form.control}
+            name="educationLevel"
+            rules={{ required: "مقطع تحصیلی الزامی است" }}
+            render={({ field }) => (
+              <FormItem>
+                <label htmlFor="educationLevel" className="block mb-2 text-sm font-medium text-gray-700">مقطع تحصیلی</label>
+                <FormControl>
+                  <Select {...field} id="educationLevel">
+                    <SelectTrigger className="text-right">
+                      <SelectValue placeholder="انتخاب مقطع تحصیلی" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Bachelors">لیسانس</SelectItem>
+                      <SelectItem value="Masters">فوق‌لیسانس</SelectItem>
+                      <SelectItem value="PhD">دکترا</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage className="text-right text-red-500 text-xs mt-1" />
+              </FormItem>
+            )}
+          />
+
+          {/* آشنایی قبلی با SCINiTO */}
+          <FormField
+            control={form.control}
+            name="usedScinitoBefore"
+            rules={{ required: "آیا قبلاً از SCINiTO استفاده کرده‌اید؟" }}
+            render={({ field }) => (
+              <FormItem>
+                <label htmlFor="usedScinitoBefore" className="block mb-2 text-sm font-medium text-gray-700">آیا قبلاً از SCINiTO استفاده کرده‌اید؟</label>
+                <FormControl>
+                  <Select {...field} id="usedScinitoBefore">
+                    <SelectTrigger className="text-right">
+                      <SelectValue placeholder="انتخاب وضعیت" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">بله</SelectItem>
+                      <SelectItem value="false">خیر</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage className="text-right text-red-500 text-xs mt-1" />
+              </FormItem>
+            )}
+          />
+
+          {/* توضیحات یا تجربیات قبلی */}
+          <FormField
+            control={form.control}
+            name="previousExperience"
+            render={({ field }) => (
+              <FormItem>
+                <label htmlFor="previousExperience" className="block mb-2 text-sm font-medium text-gray-700">تجربیات یا اطلاعات قبلی شما در این حوزه</label>
+                <FormControl>
+                  <Input
+                    id="previousExperience"
+                    placeholder="تجربیات خود را وارد کنید"
+                    className="text-right"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-right text-red-500 text-xs mt-1" />
+              </FormItem>
+            )}
+          />
+
+          <Button
+            type="submit"
+            className="w-full bg-webinar-primary hover:bg-webinar-accent text-white"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "در حال ثبت..." : "ثبت اطلاعات"}
+          </Button>
         </form>
-      </DialogContent>
-    </Dialog>
+      </Form>
+      <Button 
+        className="mt-4 w-full" 
+        variant="outline" 
+        onClick={onClose} 
+      >
+        بستن
+      </Button>
+    </div>
   );
 };
 
