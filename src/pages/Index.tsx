@@ -123,11 +123,11 @@ const Index = () => {
                 <h3 className="text-xl font-bold mb-4 text-webinar-dark">اطلاعات تماس</h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-end gap-2">
-                    <span className="text-gray-700">info@scinito.com</span>
+                    <span className="text-gray-700">Support@scinito.ai</span>
                     <Mail className="text-webinar-primary" size={20} />
                   </div>
                   <div className="flex items-center justify-end gap-2">
-                    <span className="text-gray-700">۰۲۱-۸۸۸۸۸۸۸۸</span>
+                    <span className="text-gray-700">۰۹۱۹۸۱۵۷۴۸۲</span>
                     <Phone className="text-webinar-primary" size={20} />
                   </div>
                 </div>
