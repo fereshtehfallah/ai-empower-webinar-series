@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import {
+  Select, SelectTrigger, SelectValue, SelectContent, SelectItem
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useForm } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import {
+  Form, FormControl, FormField, FormItem, FormMessage
+} from "@/components/ui/form";
 
 type AdditionalInfoFormData = {
   major: string;
@@ -14,7 +18,15 @@ type AdditionalInfoFormData = {
   usedScinitoBefore: boolean;
 };
 
-const AdditionalInfoForm = ({ isOpen, onClose, registrationId }: { isOpen: boolean, onClose: () => void, registrationId: string | null }) => {
+const AdditionalInfoForm = ({
+  isOpen,
+  onClose,
+  registrationId,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  registrationId: string | null;
+}) => {
   const form = useForm<AdditionalInfoFormData>({
     defaultValues: {
       major: '',
@@ -35,18 +47,20 @@ const AdditionalInfoForm = ({ isOpen, onClose, registrationId }: { isOpen: boole
     setIsSubmitting(true);
 
     try {
-      // Insert additional data into Supabase or Google Sheets as needed
-      const { data: insertedData, error } = await supabase
+      const { error } = await supabase
         .from('info_registeration')
-        .insert([{ ...data, registration_id: registrationId }]);
+        .update({ ...data })
+        .eq('id', registrationId);
 
       if (error) {
+        console.error(error);
         toast.error("خطا در ثبت اطلاعات تکمیلی. لطفا دوباره تلاش کنید");
       } else {
         toast.success("اطلاعات تکمیلی شما با موفقیت ثبت شد");
-        onClose(); // Close the form after submission
+        onClose();
       }
     } catch (error) {
+      console.error(error);
       toast.error("خطا در ثبت اطلاعات. لطفا دوباره تلاش کنید");
     } finally {
       setIsSubmitting(false);
@@ -60,7 +74,6 @@ const AdditionalInfoForm = ({ isOpen, onClose, registrationId }: { isOpen: boole
       <h3 className="text-2xl font-bold mb-6 text-webinar-dark">اطلاعات تکمیلی</h3>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-          {/* رشته تحصیلی */}
           <FormField
             control={form.control}
             name="major"
@@ -81,7 +94,6 @@ const AdditionalInfoForm = ({ isOpen, onClose, registrationId }: { isOpen: boole
             )}
           />
 
-          {/* مقطع تحصیلی */}
           <FormField
             control={form.control}
             name="educationLevel"
@@ -90,7 +102,7 @@ const AdditionalInfoForm = ({ isOpen, onClose, registrationId }: { isOpen: boole
               <FormItem>
                 <label htmlFor="educationLevel" className="block mb-2 text-sm font-medium text-gray-700">مقطع تحصیلی</label>
                 <FormControl>
-                  <Select {...field} id="educationLevel">
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <SelectTrigger className="text-right">
                       <SelectValue placeholder="انتخاب مقطع تحصیلی" />
                     </SelectTrigger>
@@ -106,7 +118,6 @@ const AdditionalInfoForm = ({ isOpen, onClose, registrationId }: { isOpen: boole
             )}
           />
 
-          {/* آشنایی قبلی با SCINiTO */}
           <FormField
             control={form.control}
             name="usedScinitoBefore"
@@ -115,7 +126,10 @@ const AdditionalInfoForm = ({ isOpen, onClose, registrationId }: { isOpen: boole
               <FormItem>
                 <label htmlFor="usedScinitoBefore" className="block mb-2 text-sm font-medium text-gray-700">آیا قبلاً از SCINiTO استفاده کرده‌اید؟</label>
                 <FormControl>
-                  <Select {...field} id="usedScinitoBefore">
+                  <Select
+                    onValueChange={(value) => field.onChange(value === "true")}
+                    defaultValue={field.value ? "true" : "false"}
+                  >
                     <SelectTrigger className="text-right">
                       <SelectValue placeholder="انتخاب وضعیت" />
                     </SelectTrigger>
@@ -130,44 +144,9 @@ const AdditionalInfoForm = ({ isOpen, onClose, registrationId }: { isOpen: boole
             )}
           />
 
-          {/* توضیحات یا تجربیات قبلی */}
           <FormField
             control={form.control}
             name="previousExperience"
             render={({ field }) => (
               <FormItem>
-                <label htmlFor="previousExperience" className="block mb-2 text-sm font-medium text-gray-700">تجربیات یا اطلاعات قبلی شما در این حوزه</label>
-                <FormControl>
-                  <Input
-                    id="previousExperience"
-                    placeholder="تجربیات خود را وارد کنید"
-                    className="text-right"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage className="text-right text-red-500 text-xs mt-1" />
-              </FormItem>
-            )}
-          />
-
-          <Button
-            type="submit"
-            className="w-full bg-webinar-primary hover:bg-webinar-accent text-white"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "در حال ثبت..." : "ثبت اطلاعات"}
-          </Button>
-        </form>
-      </Form>
-      <Button 
-        className="mt-4 w-full" 
-        variant="outline" 
-        onClick={onClose} 
-      >
-        بستن
-      </Button>
-    </div>
-  );
-};
-
-export default AdditionalInfoForm;
+                <label htmlFor="previousExperience" className="block mb-2 text-sm font
