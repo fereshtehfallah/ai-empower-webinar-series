@@ -1,7 +1,7 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectItem } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useForm } from "react-hook-form";
@@ -18,6 +18,8 @@ type RegistrationFormData = {
   name: string;
   email: string;
   phone: string;
+  role: string;
+  university: string;
 };
 
 const RegistrationForm = () => {
@@ -30,14 +32,15 @@ const RegistrationForm = () => {
       name: '',
       email: '',
       phone: '',
+      role: '',
+      university: '',
     },
   });
 
   const handleSubmit = async (data: RegistrationFormData) => {
     setIsSubmitting(true);
-    
+
     try {
-      // Insert data into Supabase
       const { data: insertedData, error } = await supabase
         .from('webinar_registrations')
         .insert([data])
@@ -45,7 +48,6 @@ const RegistrationForm = () => {
 
       if (error) {
         if (error.code === '23505') {
-          // Unique constraint violation (duplicate email)
           toast.error("این ایمیل قبلا ثبت شده است");
         } else {
           console.error("Supabase error:", error);
@@ -53,7 +55,6 @@ const RegistrationForm = () => {
         }
       } else {
         toast.success("ثبت‌نام شما با موفقیت انجام شد");
-        // Store registration ID and show additional info form
         if (insertedData && insertedData.length > 0) {
           setRegistrationId(insertedData[0].id);
           setShowAdditionalInfo(true);
@@ -97,7 +98,7 @@ const RegistrationForm = () => {
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="email"
@@ -124,7 +125,7 @@ const RegistrationForm = () => {
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="phone"
@@ -151,7 +152,51 @@ const RegistrationForm = () => {
                 </FormItem>
               )}
             />
-            
+
+            <FormField
+              control={form.control}
+              name="role"
+              rules={{ required: "نقش شما الزامی است" }}
+              render={({ field }) => (
+                <FormItem>
+                  <label htmlFor="role" className="block mb-2 text-sm font-medium text-gray-700">نقش شما</label>
+                  <FormControl>
+                    <select
+                      id="role"
+                      className="w-full border rounded px-3 py-2 text-right"
+                      {...field}
+                    >
+                      <option value="">-- انتخاب کنید --</option>
+                      <option value="student">دانشجو</option>
+                      <option value="faculty">هیئت علمی</option>
+                      <option value="librarian">کتابدار</option>
+                    </select>
+                  </FormControl>
+                  <FormMessage className="text-right text-red-500 text-xs mt-1" />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="university"
+              rules={{ required: "نام دانشگاه الزامی است" }}
+              render={({ field }) => (
+                <FormItem>
+                  <label htmlFor="university" className="block mb-2 text-sm font-medium text-gray-700">نام دانشگاه</label>
+                  <FormControl>
+                    <Input
+                      id="university"
+                      placeholder="مثلاً دانشگاه تهران"
+                      className="text-right"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-right text-red-500 text-xs mt-1" />
+                </FormItem>
+              )}
+            />
+
             <Button
               type="submit"
               className="w-full bg-webinar-primary hover:bg-webinar-accent text-white"
@@ -163,7 +208,6 @@ const RegistrationForm = () => {
         </Form>
       </div>
 
-      {/* Additional Information Dialog */}
       <AdditionalInfoForm 
         isOpen={showAdditionalInfo} 
         onClose={handleAdditionalInfoClose} 
