@@ -64,15 +64,6 @@ const RegistrationForm = () => {
           setShowAdditionalInfo(true);
         }
 
-        // ارسال به Google Sheets
-        await fetch("https://script.google.com/macros/s/AKfycbyii5TXDyImk5eO3PDRny_wKE22EQYmwMfWYgyVJTP5sVR7n4EVV1et7QGwXz17PCsr/exec", {
-          method: "POST",
-          body: JSON.stringify(data),
-          headers: {
-            "Content-Type": "application/json"
-          }
-        });
-
         form.reset();
       }
     } catch (error) {
