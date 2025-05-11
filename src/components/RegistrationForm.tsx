@@ -45,7 +45,7 @@ const RegistrationForm = () => {
 
     try {
       const { data: insertedData, error } = await supabase
-        .from('webinar_registrations')
+        .from('info_registeration')
         .insert([data])
         .select('id');
 
