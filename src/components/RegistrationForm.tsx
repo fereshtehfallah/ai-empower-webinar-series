@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectItem } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useForm } from "react-hook-form";
@@ -13,6 +12,10 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+
+import { Select } from "@/components/ui/select";
+import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 
 type RegistrationFormData = {
   name: string;
@@ -55,10 +58,21 @@ const RegistrationForm = () => {
         }
       } else {
         toast.success("ثبت‌نام شما با موفقیت انجام شد");
+
         if (insertedData && insertedData.length > 0) {
           setRegistrationId(insertedData[0].id);
           setShowAdditionalInfo(true);
         }
+
+        // ارسال به Google Sheets
+        await fetch("https://script.google.com/macros/s/AKfycbyii5TXDyImk5eO3PDRny_wKE22EQYmwMfWYgyVJTP5sVR7n4EVV1et7QGwXz17PCsr/exec", {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+
         form.reset();
       }
     } catch (error) {
@@ -161,16 +175,16 @@ const RegistrationForm = () => {
                 <FormItem>
                   <label htmlFor="role" className="block mb-2 text-sm font-medium text-gray-700">نقش شما</label>
                   <FormControl>
-                    <select
-                      id="role"
-                      className="w-full border rounded px-3 py-2 text-right"
-                      {...field}
-                    >
-                      <option value="">-- انتخاب کنید --</option>
-                      <option value="student">دانشجو</option>
-                      <option value="faculty">هیئت علمی</option>
-                      <option value="librarian">کتابدار</option>
-                    </select>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="انتخاب کنید" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="دانشجو">دانشجو</SelectItem>
+                        <SelectItem value="هیئت علمی">هیئت علمی</SelectItem>
+                        <SelectItem value="کتابدار">کتابدار</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage className="text-right text-red-500 text-xs mt-1" />
                 </FormItem>
@@ -187,7 +201,7 @@ const RegistrationForm = () => {
                   <FormControl>
                     <Input
                       id="university"
-                      placeholder="مثلاً دانشگاه تهران"
+                      placeholder="مثال: دانشگاه تهران"
                       className="text-right"
                       {...field}
                     />
