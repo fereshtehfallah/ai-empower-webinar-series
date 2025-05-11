@@ -44,7 +44,7 @@ const AdditionalInfoForm = ({
 
     try {
       const { error } = await supabase
-        .from('info_registeration')
+        .from('webinar_registrations')
         .insert([{ ...data, registration_id: registrationId }]);
 
       if (error) {
