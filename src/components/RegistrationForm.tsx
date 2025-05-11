@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useForm } from "react-hook-form";
+import AdditionalInfoForm from './AdditionalInfoForm';
 import {
   Form,
   FormControl,
@@ -21,6 +22,8 @@ type RegistrationFormData = {
 
 const RegistrationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAdditionalInfo, setShowAdditionalInfo] = useState(false);
+  const [registrationId, setRegistrationId] = useState<string | null>(null);
 
   const form = useForm<RegistrationFormData>({
     defaultValues: {
@@ -35,9 +38,10 @@ const RegistrationForm = () => {
     
     try {
       // Insert data into Supabase
-      const { error } = await supabase
+      const { data: insertedData, error } = await supabase
         .from('webinar_registrations')
-        .insert([data]);
+        .insert([data])
+        .select('id');
 
       if (error) {
         if (error.code === '23505') {
@@ -49,6 +53,11 @@ const RegistrationForm = () => {
         }
       } else {
         toast.success("ثبت‌نام شما با موفقیت انجام شد");
+        // Store registration ID and show additional info form
+        if (insertedData && insertedData.length > 0) {
+          setRegistrationId(insertedData[0].id);
+          setShowAdditionalInfo(true);
+        }
         form.reset();
       }
     } catch (error) {
@@ -59,95 +68,108 @@ const RegistrationForm = () => {
     }
   };
 
+  const handleAdditionalInfoClose = () => {
+    setShowAdditionalInfo(false);
+  };
+
   return (
-    <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-lg p-6 farsi">
-      <h3 className="text-2xl font-bold mb-6 text-webinar-dark">ثبت‌نام در وبینار</h3>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="name"
-            rules={{ required: "نام و نام خانوادگی الزامی است" }}
-            render={({ field }) => (
-              <FormItem>
-                <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-700">نام و نام خانوادگی</label>
-                <FormControl>
-                  <Input
-                    id="name"
-                    placeholder="لطفا نام خود را وارد کنید"
-                    className="text-right"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage className="text-right text-red-500 text-xs mt-1" />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="email"
-            rules={{ 
-              required: "ایمیل الزامی است",
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: "لطفا یک ایمیل معتبر وارد کنید"
-              }
-            }}
-            render={({ field }) => (
-              <FormItem>
-                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-700">ایمیل</label>
-                <FormControl>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="example@mail.com"
-                    className="text-left"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage className="text-right text-red-500 text-xs mt-1" />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="phone"
-            rules={{ 
-              required: "شماره تماس الزامی است",
-              pattern: {
-                value: /^(0|\+98)9[0-9]{9}$/,
-                message: "لطفا یک شماره موبایل معتبر وارد کنید (مثال: ۰۹۱۲۳۴۵۶۷۸۹)"
-              }
-            }}
-            render={({ field }) => (
-              <FormItem>
-                <label htmlFor="phone" className="block mb-2 text-sm font-medium text-gray-700">شماره تماس</label>
-                <FormControl>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="09xxxxxxxxx"
-                    className="text-left"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage className="text-right text-red-500 text-xs mt-1" />
-              </FormItem>
-            )}
-          />
-          
-          <Button
-            type="submit"
-            className="w-full bg-webinar-primary hover:bg-webinar-accent text-white"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "در حال ثبت..." : "ثبت‌نام"}
-          </Button>
-        </form>
-      </Form>
-    </div>
+    <>
+      <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-lg p-6 farsi">
+        <h3 className="text-2xl font-bold mb-6 text-webinar-dark">ثبت‌نام در وبینار</h3>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              rules={{ required: "نام و نام خانوادگی الزامی است" }}
+              render={({ field }) => (
+                <FormItem>
+                  <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-700">نام و نام خانوادگی</label>
+                  <FormControl>
+                    <Input
+                      id="name"
+                      placeholder="لطفا نام خود را وارد کنید"
+                      className="text-right"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-right text-red-500 text-xs mt-1" />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="email"
+              rules={{ 
+                required: "ایمیل الزامی است",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "لطفا یک ایمیل معتبر وارد کنید"
+                }
+              }}
+              render={({ field }) => (
+                <FormItem>
+                  <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-700">ایمیل</label>
+                  <FormControl>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="example@mail.com"
+                      className="text-left"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-right text-red-500 text-xs mt-1" />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="phone"
+              rules={{ 
+                required: "شماره تماس الزامی است",
+                pattern: {
+                  value: /^(0|\+98)9[0-9]{9}$/,
+                  message: "لطفا یک شماره موبایل معتبر وارد کنید (مثال: ۰۹۱۲۳۴۵۶۷۸۹)"
+                }
+              }}
+              render={({ field }) => (
+                <FormItem>
+                  <label htmlFor="phone" className="block mb-2 text-sm font-medium text-gray-700">شماره تماس</label>
+                  <FormControl>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="09xxxxxxxxx"
+                      className="text-left"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-right text-red-500 text-xs mt-1" />
+                </FormItem>
+              )}
+            />
+            
+            <Button
+              type="submit"
+              className="w-full bg-webinar-primary hover:bg-webinar-accent text-white"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "در حال ثبت..." : "ثبت‌نام"}
+            </Button>
+          </form>
+        </Form>
+      </div>
+
+      {/* Additional Information Dialog */}
+      <AdditionalInfoForm 
+        isOpen={showAdditionalInfo} 
+        onClose={handleAdditionalInfoClose} 
+        registrationId={registrationId} 
+      />
+    </>
   );
 };
 
