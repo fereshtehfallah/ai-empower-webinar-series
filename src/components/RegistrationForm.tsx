@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,8 @@ import {
 import { Select } from "@/components/ui/select";
 import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+// Google Apps Script endpoint URL
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyii5TXDyImk5eO3PDRny_wKE22EQYmwMfWYgyVJTP5sVR7n4EVV1et7QGwXz17PCsr/exec";
 
 type RegistrationFormData = {
   name: string;
@@ -40,10 +43,36 @@ const RegistrationForm = () => {
     },
   });
 
+  // Function to send data to Google Sheets
+  const sendToGoogleSheets = async (data: RegistrationFormData) => {
+    try {
+      // Using no-cors mode as Google Apps Script may not have CORS headers set
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          timestamp: new Date().toISOString(),
+          source: window.location.hostname,
+        }),
+      });
+
+      console.log("Data sent to Google Sheets");
+      // Note: Due to no-cors mode, we cannot check the response status
+    } catch (error) {
+      console.error("Error sending data to Google Sheets:", error);
+      // We don't show this error to the user as it's not critical
+    }
+  };
+
   const handleSubmit = async (data: RegistrationFormData) => {
     setIsSubmitting(true);
 
     try {
+      // First: Save data to Supabase
       const { data: insertedData, error } = await supabase
         .from('info_registeration')
         .insert([data])
@@ -57,6 +86,9 @@ const RegistrationForm = () => {
           toast.error("خطا در ثبت اطلاعات. لطفا دوباره تلاش کنید");
         }
       } else {
+        // Second: Try to send to Google Sheets (but don't block user flow if it fails)
+        sendToGoogleSheets(data).catch(console.error);
+        
         toast.success("ثبت‌نام شما با موفقیت انجام شد");
 
         if (insertedData && insertedData.length > 0) {

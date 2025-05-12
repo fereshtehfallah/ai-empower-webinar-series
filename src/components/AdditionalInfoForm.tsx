@@ -7,6 +7,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 
+// Google Apps Script endpoint URL
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyii5TXDyImk5eO3PDRny_wKE22EQYmwMfWYgyVJTP5sVR7n4EVV1et7QGwXz17PCsr/exec";
+
 type AdditionalInfoFormData = {
   major: string;
   educationLevel: string;
@@ -34,6 +37,29 @@ const AdditionalInfoForm = ({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Function to send additional data to Google Sheets
+  const sendToGoogleSheets = async (data: AdditionalInfoFormData & { registration_id: string }) => {
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          timestamp: new Date().toISOString(),
+          formType: 'additional',
+          source: window.location.hostname,
+        }),
+      });
+
+      console.log("Additional data sent to Google Sheets");
+    } catch (error) {
+      console.error("Error sending additional data to Google Sheets:", error);
+    }
+  };
+
   const handleSubmit = async (data: AdditionalInfoFormData) => {
     if (!registrationId) {
       toast.error("خطا: اطلاعات ثبت‌نام معتبر نیست");
@@ -43,17 +69,28 @@ const AdditionalInfoForm = ({
     setIsSubmitting(true);
 
     try {
+      // Prepare data object with registration ID
+      const dataWithId = { 
+        ...data, 
+        registration_id: registrationId 
+      };
+
+      // First: Save to Supabase
       const { error } = await supabase
         .from('webinar_registrations')
-        .insert([{ ...data, registration_id: registrationId }]);
+        .insert([dataWithId]);
 
       if (error) {
         toast.error("خطا در ثبت اطلاعات تکمیلی. لطفا دوباره تلاش کنید");
       } else {
+        // Second: Try to send to Google Sheets
+        sendToGoogleSheets(dataWithId).catch(console.error);
+        
         toast.success("اطلاعات تکمیلی شما با موفقیت ثبت شد");
         onClose();
       }
-    } catch {
+    } catch (error) {
+      console.error("Error submitting additional info:", error);
       toast.error("خطا در ثبت اطلاعات. لطفا دوباره تلاش کنید");
     } finally {
       setIsSubmitting(false);
