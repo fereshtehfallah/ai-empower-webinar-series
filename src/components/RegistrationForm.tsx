@@ -92,7 +92,8 @@ const RegistrationForm = () => {
         toast.success("ثبت‌نام شما با موفقیت انجام شد");
 
         if (insertedData && insertedData.length > 0) {
-          setRegistrationId(insertedData[0].id);
+          // Fix the type error by converting the id to string if needed
+          setRegistrationId(String(insertedData[0].id));
           setShowAdditionalInfo(true);
         }
 

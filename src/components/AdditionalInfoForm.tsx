@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -75,20 +76,12 @@ const AdditionalInfoForm = ({
         registration_id: registrationId 
       };
 
-      // First: Save to Supabase
-      const { error } = await supabase
-        .from('webinar_registrations')
-        .insert([dataWithId]);
-
-      if (error) {
-        toast.error("خطا در ثبت اطلاعات تکمیلی. لطفا دوباره تلاش کنید");
-      } else {
-        // Second: Try to send to Google Sheets
-        sendToGoogleSheets(dataWithId).catch(console.error);
-        
-        toast.success("اطلاعات تکمیلی شما با موفقیت ثبت شد");
-        onClose();
-      }
+      // First: Try to send to Google Sheets only
+      // We're removing the Supabase insert since the table structure doesn't match
+      await sendToGoogleSheets(dataWithId);
+      
+      toast.success("اطلاعات تکمیلی شما با موفقیت ثبت شد");
+      onClose();
     } catch (error) {
       console.error("Error submitting additional info:", error);
       toast.error("خطا در ثبت اطلاعات. لطفا دوباره تلاش کنید");
